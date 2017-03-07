@@ -1,4 +1,4 @@
-package workers
+package wrkrs
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ const (
 	SCHEDULED_JOBS_KEY = "schedule"
 )
 
-var Logger WorkersLogger = log.New(os.Stdout, "workers: ", log.Ldate|log.Lmicroseconds)
+var Logger WorkersLogger = log.New(os.Stdout, "wrkrs: ", log.Ldate|log.Lmicroseconds)
 
 var managers = make(map[string]*manager)
 var schedule *scheduled
@@ -46,7 +46,7 @@ func ResetManagers() error {
 	defer access.Unlock()
 
 	if started {
-		return errors.New("Cannot reset worker managers while workers are running")
+		return errors.New("Cannot reset worker managers while wrkrs are running")
 	}
 
 	managers = make(map[string]*manager)

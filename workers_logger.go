@@ -1,4 +1,4 @@
-package workers
+package wrkrs
 
 type WorkersLogger interface {
 	Println(...interface{})

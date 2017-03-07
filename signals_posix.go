@@ -1,6 +1,6 @@
 // +build !windows
 
-package workers
+package wrkrs
 
 import (
 	"os"

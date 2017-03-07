@@ -1,4 +1,4 @@
-package workers
+package wrkrs
 
 import (
 	"encoding/json"

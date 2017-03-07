@@ -1,3 +1,3 @@
-package workers
+package wrkrs
 
 type jobFunc func(message *Msg)

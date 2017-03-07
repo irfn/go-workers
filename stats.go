@@ -1,4 +1,4 @@
-package workers
+package wrkrs
 
 import (
 	"encoding/json"
@@ -26,7 +26,7 @@ func Stats(w http.ResponseWriter, req *http.Request) {
 		queue := m.queueName()
 		jobs[queue] = make([]*map[string]interface{}, 0)
 		enqueued[queue] = ""
-		for _, worker := range m.workers {
+		for _, worker := range m.wrkrs {
 			message := worker.currentMsg
 			startedAt := worker.startedAt
 

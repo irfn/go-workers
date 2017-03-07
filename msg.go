@@ -1,4 +1,4 @@
-package workers
+package wrkrs
 
 import (
 	"github.com/bitly/go-simplejson"

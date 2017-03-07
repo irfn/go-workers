@@ -1,4 +1,4 @@
-package workers
+package wrkrs
 
 var beforeStart []func()
 var duringDrain []func()

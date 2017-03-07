@@ -1,4 +1,4 @@
-package workers
+package wrkrs
 
 type Action interface {
 	Call(queue string, message *Msg, next func() bool) bool

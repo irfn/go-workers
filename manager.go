@@ -1,4 +1,4 @@
-package workers
+package wrkrs
 
 import (
 	"strings"
@@ -10,8 +10,8 @@ type manager struct {
 	fetch       Fetcher
 	job         jobFunc
 	concurrency int
-	workers     []*worker
-	workersM    *sync.Mutex
+	wrkrs     []*worker
+	wrkrsM    *sync.Mutex
 	confirm     chan *Msg
 	stop        chan bool
 	exit        chan bool
@@ -32,14 +32,14 @@ func (m *manager) prepare() {
 }
 
 func (m *manager) quit() {
-	Logger.Println("quitting queue", m.queueName(), "(waiting for", m.processing(), "/", len(m.workers), "workers).")
+	Logger.Println("quitting queue", m.queueName(), "(waiting for", m.processing(), "/", len(m.wrkrs), "wrkrs).")
 	m.prepare()
 
-	m.workersM.Lock()
-	for _, worker := range m.workers {
+	m.wrkrsM.Lock()
+	for _, worker := range m.wrkrs {
 		worker.quit()
 	}
-	m.workersM.Unlock()
+	m.wrkrsM.Unlock()
 
 	m.stop <- true
 	<-m.exit
@@ -50,7 +50,7 @@ func (m *manager) quit() {
 }
 
 func (m *manager) manage() {
-	Logger.Println("processing queue", m.queueName(), "with", m.concurrency, "workers.")
+	Logger.Println("processing queue", m.queueName(), "with", m.concurrency, "wrkrs.")
 
 	go m.fetch.Fetch()
 
@@ -66,22 +66,22 @@ func (m *manager) manage() {
 }
 
 func (m *manager) loadWorkers() {
-	m.workersM.Lock()
+	m.wrkrsM.Lock()
 	for i := 0; i < m.concurrency; i++ {
-		m.workers[i] = newWorker(m)
-		m.workers[i].start()
+		m.wrkrs[i] = newWorker(m)
+		m.wrkrs[i].start()
 	}
-	m.workersM.Unlock()
+	m.wrkrsM.Unlock()
 }
 
 func (m *manager) processing() (count int) {
-	m.workersM.Lock()
-	for _, worker := range m.workers {
+	m.wrkrsM.Lock()
+	for _, worker := range m.wrkrs {
 		if worker.processing() {
 			count++
 		}
 	}
-	m.workersM.Unlock()
+	m.wrkrsM.Unlock()
 	return
 }
 
