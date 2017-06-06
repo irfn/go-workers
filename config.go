@@ -13,6 +13,9 @@ type config struct {
 	PollInterval int
 	Pool         *redis.Pool
 	Fetch        func(queue string) Fetcher
+	DialTimeout  int
+	ReadTimeout  int
+	WriteTimeout int
 }
 
 var Config *config
@@ -21,6 +24,9 @@ func Configure(options map[string]string) {
 	var poolSize int
 	var namespace string
 	var pollInterval int
+	var dialTimeout int
+	var readTimeout int
+	var writeTimeout int
 
 	if options["server"] == "" {
 		panic("Configure requires a 'server' option, which identifies a Redis instance")
@@ -39,6 +45,21 @@ func Configure(options map[string]string) {
 	} else {
 		pollInterval = 15
 	}
+	if milliseconds, err := strconv.Atoi(options["dial_timeout"]); err == nil {
+		dialTimeout = milliseconds
+	} else {
+		dialTimeout = 500
+	}
+	if milliseconds, err := strconv.Atoi(options["read_timeout"]); err == nil {
+		readTimeout = milliseconds
+	} else {
+		readTimeout = 500
+	}
+	if milliseconds, err := strconv.Atoi(options["write_timeout"]); err == nil {
+		writeTimeout = milliseconds
+	} else {
+		writeTimeout = 500
+	}
 
 	poolSize, _ = strconv.Atoi(options["pool"])
 
@@ -50,7 +71,11 @@ func Configure(options map[string]string) {
 			MaxIdle:     poolSize,
 			IdleTimeout: 240 * time.Second,
 			Dial: func() (redis.Conn, error) {
-				c, err := redis.Dial("tcp", options["server"])
+				c, err := redis.Dial("tcp", options["server"],
+					redis.DialConnectTimeout(time.Duration(dialTimeout)*time.Millisecond),
+					redis.DialReadTimeout(time.Duration(readTimeout)*time.Millisecond),
+					redis.DialWriteTimeout(time.Duration(writeTimeout)*time.Millisecond),
+				)
 				if err != nil {
 					return nil, err
 				}
@@ -76,5 +101,8 @@ func Configure(options map[string]string) {
 		func(queue string) Fetcher {
 			return NewFetch(queue, make(chan *Msg), make(chan bool))
 		},
+		dialTimeout,
+		readTimeout,
+		writeTimeout,
 	}
 }
