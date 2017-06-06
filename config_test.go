@@ -87,4 +87,67 @@ func ConfigSpec(c gospec.Context) {
 
 		c.Expect(Config.PollInterval, Equals, 1)
 	})
+
+	c.Specify("defaults dial timeout to 500 ms", func() {
+		Configure(map[string]string{
+			"server":        "localhost:6379",
+			"process":       "1",
+			"poll_interval": "1",
+		})
+
+		c.Expect(Config.DialTimeout, Equals, 500)
+	})
+
+	c.Specify("allows customisation of dial timeout", func() {
+		Configure(map[string]string{
+			"server":        "localhost:6379",
+			"process":       "1",
+			"poll_interval": "1",
+			"dial_timeout":  "100",
+		})
+
+		c.Expect(Config.DialTimeout, Equals, 100)
+	})
+
+	c.Specify("defaults read timeout to 500 ms", func() {
+		Configure(map[string]string{
+			"server":        "localhost:6379",
+			"process":       "1",
+			"poll_interval": "1",
+		})
+
+		c.Expect(Config.ReadTimeout, Equals, 500)
+	})
+
+	c.Specify("allows customisation of read timeout", func() {
+		Configure(map[string]string{
+			"server":        "localhost:6379",
+			"process":       "1",
+			"poll_interval": "1",
+			"read_timeout":  "100",
+		})
+
+		c.Expect(Config.ReadTimeout, Equals, 100)
+	})
+
+	c.Specify("defaults write timeout to 500 ms", func() {
+		Configure(map[string]string{
+			"server":        "localhost:6379",
+			"process":       "1",
+			"poll_interval": "1",
+		})
+
+		c.Expect(Config.WriteTimeout, Equals, 500)
+	})
+
+	c.Specify("allows customisation of write timeout", func() {
+		Configure(map[string]string{
+			"server":        "localhost:6379",
+			"process":       "1",
+			"poll_interval": "1",
+			"write_timeout": "100",
+		})
+
+		c.Expect(Config.WriteTimeout, Equals, 100)
+	})
 }
